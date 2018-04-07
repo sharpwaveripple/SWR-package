@@ -8,12 +8,11 @@ count_categorical <- function(dataset, variable, precision) {
 
 
 format_categorical <- function(dataset, cat_vars, precision) {
-  global_counts <- c()
+  global_counts <- matrix()
   for (i in cat_vars) {
     counts <- count_categorical(dataset, i, precision)
     global_counts <- rbind(global_counts, counts)
   }
-  colnames(global_counts) <- paste("n =", nrow(dataset))
   return(global_counts)
 }
 
@@ -37,5 +36,6 @@ describe <- function(dataset, cat_thresh = 5, precision = 1) {
   cat_rows <- format_categorical(dataset, cat_vars, precision)
   cont_rows <- format_continuous(dataset, cont_vars, precision)
   out_list <- rbind(cat_rows, cont_rows)
+  colnames(out_list) <- paste("n =", nrow(dataset))
   return(out_list)
 }
