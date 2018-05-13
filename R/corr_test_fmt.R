@@ -33,5 +33,6 @@ corr_test_fmt <- function(dataset, cat_thresh = 5, precision = 2,
   }
 
   corr_fmt[tri] <- ""
+  diag(tri) <- ""
   return(corr_fmt)
 }
