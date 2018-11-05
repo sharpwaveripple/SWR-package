@@ -7,11 +7,10 @@ format_p <- function(p, digits = 3, p_under = .001) {
   return(p)
 }
 
-format_corr <- function(corr_test_obj, digits = 2, p_digits = 3, p_under = .001) {
+format_corr <- function(corr_test_obj, p_digits = 3, p_under = .001) {
   # Takes the output of psych::corr.test() and formats it as a r (p) matrix
-  fmt_str <- paste("%.", digits, "f", sep="")
   r <- corr_test_obj$r
-  r[] <- sprintf(fmt_str, r)
+  r[] <- sprintf("%.2f", r)
   p <- format_p(corr_test_obj$p, p_digits, p_under)
   corr_table <- r
   corr_table[] <- paste(r, " (", p, ")", sep="")
@@ -20,7 +19,7 @@ format_corr <- function(corr_test_obj, digits = 2, p_digits = 3, p_under = .001)
 }
 
 format_alpha <- function(alpha_obj) {
-  # Summarizes input from psych::alpha()
+  # Summarizes output from psych::alpha()
   stats <- list()
   scale_stats <- alpha_obj$total[c("std.alpha", "mean", "sd")]
   scale_stats[1] <- sprintf("%.2f", scale_stats[1])
@@ -36,8 +35,8 @@ format_alpha <- function(alpha_obj) {
   return(stats)
 }
 
-extract_fit <- function(lavaan_fit, digits = 2, p_digits = 3, scaled = TRUE) {
-  fmt_str <- paste("%.", digits, "f", sep="")
+extract_fit <- function(lavaan_fit, p_digits = 3, scaled = TRUE) {
+  # Summarizes output from lavaan::lavaan()
   fit_ind <- c("chisq", "pvalue", "rmsea", "rmsea.ci.lower", "rmsea.ci.upper",
                "cfi", "tli", "srmr")
   if (scaled) {
@@ -45,7 +44,9 @@ extract_fit <- function(lavaan_fit, digits = 2, p_digits = 3, scaled = TRUE) {
     fit_ind <- paste(fit_ind, "scaled", sep=".")
   }
   fits <- lavaan::fitmeasures(fit, fit_ind)
-  fits <- sprintf(fmt_str, fits)
+  fits[1] <- sprintf("%.1f", fits[1])
+  fits[2] <- format_p(fits[2], p_digits)
+  fits[3:8] <- sprintf("%.2f", fits[3:8])
   chisq <- paste("x2 = ", fits[1], ", P = ", fits[2], sep="")
   rmsea <- paste("RMSEA = ", fits[3],
                  ", 95% CI = [", fits[4], ", ", fits[5], "]", sep="")
