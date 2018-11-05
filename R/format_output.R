@@ -1,4 +1,4 @@
-format_p <- function(p, digits=3, p_under=.001) {
+format_p <- function(p, digits = 3, p_under = .001) {
   fmt_str <- paste("%.", digits, "f", sep="")
   p_less_than <- p < p_under
   p[] <- sprintf(fmt_str, p)
@@ -15,5 +15,6 @@ format_corr <- function(corr_test_obj, digits = 3, p_under = .001) {
   p <- format_p(corr_test_obj$p, digits, p_under)
   corr_table <- r
   corr_table[] <- paste(r, " (", p, ")", sep="")
+  diag(corr_table) <- ""
   return(corr_table)
 }
