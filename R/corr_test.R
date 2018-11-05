@@ -11,10 +11,10 @@ format_correlation <- function(corr_mat, r_precision=2,
   return(tab)
 }
 
-corr_test_fmt <- function(dataset, cat_thresh = 5, precision = 2,
-                          correct = "both",
-                          use="pairwise", method="pearson",
-                          adjust="holm", alpha=.05, ci=T) {
+corr_test <- function(dataset, cat_thresh = 5, precision = 2,
+		      keep = c("all", "upper", "lower"),
+		      use="pairwise", method="pearson",
+		      adjust="holm", alpha=.05, ci=T) {
 
   n_unique <- sapply(dataset[names(dataset)], function(x) length(unique(x)))
   cat_cols <- as.vector(n_unique < cat_thresh)
@@ -24,11 +24,11 @@ corr_test_fmt <- function(dataset, cat_thresh = 5, precision = 2,
 
   corr_fmt <- format_correlation(corr, precision)
 
-  if (correct == "corrected") {
+  if (keep == "upper") {
     tri <- lower.tri(corr_fmt, diag = T)
-  } else if (correct == "uncorrected") {
+  } else if (keep == "lower") {
     tri <- upper.tri(corr_fmt, diag = T)
-  } else if (correct == "both") {
+  } else if (keep == "all") {
     tri <- corr_fmt != corr_fmt
   }
 
