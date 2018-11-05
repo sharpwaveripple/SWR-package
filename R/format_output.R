@@ -18,3 +18,23 @@ format_corr <- function(corr_test_obj, digits = 3, p_under = .001) {
   diag(corr_table) <- ""
   return(corr_table)
 }
+
+extract_fit <- function(lavaan_fit, digits = 3, scaled = TRUE) {
+  fmt_str <- paste("%.", digits, "f", sep="")
+  fit_ind <- c("chisq", "pvalue", "rmsea", "rmsea.ci.lower", "rmsea.ci.upper",
+               "cfi", "tli", "srmr")
+  if (scaled) {
+    print("Using scaled fit indices...")
+    fit_ind <- paste(fit_ind, "scaled", sep=".")
+  }
+  fits <- lavaan::fitmeasures(fit, fit_ind)
+  fits <- sprintf(fmt_str, fits)
+  chisq <- paste("x2 = ", fits[1], ", P = ", fits[2], sep="")
+  rmsea <- paste("RMSEA = ", fits[3],
+                 ", 95% CI = [", fits[4], ", ", fits[5], "]", sep="")
+  cfi <- paste("CFI = ", fits[6])
+  tli <- paste("TLI = ", fits[7])
+  srmr <- paste("SRMR = ", fits[8])
+  fit_list <- list(chisq=chisq, rmsea=rmsea, cfi=cfi, tli=tli, srmr=srmr)
+  return(fit_list)
+}
