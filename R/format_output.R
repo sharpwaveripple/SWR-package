@@ -43,11 +43,10 @@ extract_fit <- function(lavaan_fit, p_digits = 3, scaled = TRUE) {
     print("Using scaled fit indices...")
     fit_ind <- paste(fit_ind, "scaled", sep=".")
   }
-  fits <- lavaan::fitmeasures(fit, fit_ind)
-  fits[1] <- sprintf("%.1f", fits[1])
-  fits[2] <- format_p(fits[2], p_digits)
+  fits <- as.numeric(lavaan::fitmeasures(fit, fit_ind))
+  chisq <- paste("χ^2 = ", sprintf("%.1f", fits[1]),
+                 ", P = ", format_p(fits[2], p_digits), sep="")
   fits[3:8] <- sprintf("%.2f", fits[3:8])
-  chisq <- paste("x2 = ", fits[1], ", P = ", fits[2], sep="")
   rmsea <- paste("RMSEA = ", fits[3],
                  ", 95% CI = [", fits[4], ", ", fits[5], "]", sep="")
   cfi <- paste("CFI = ", fits[6])
