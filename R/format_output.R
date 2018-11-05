@@ -24,14 +24,14 @@ format_alpha <- function(alpha_obj) {
   scale_stats <- alpha_obj$total[c("std.alpha", "mean", "sd")]
   scale_stats[1] <- sprintf("%.2f", scale_stats[1])
   scale_stats[2:3] <- sprintf("%.1f", scale_stats[2:3])
-  stats[['alpha']] <- scale_stats[1]
-  stats[['mean']] <- paste(scale_stats[2], " (", scale_stats[3], ")", sep="")
+  stats[["alpha"]] <- paste("α =", scale_stats[1])
+  stats[["mean"]] <- paste(scale_stats[2], " (", scale_stats[3], ")", sep="")
   response_freq <- alpha_obj$response.freq * 100
   response_freq[] <- sprintf("%.1f", as.matrix(response_freq))
-  alpha_drop <- alpha_obj$alpha.drop['std.alpha']
+  alpha_drop <- alpha_obj$alpha.drop["std.alpha"]
   alpha_drop[] <- sprintf("%.2f", as.matrix(alpha_drop))
   item_stats <- cbind(response_freq, alpha_drop)
-  stats[['items']] <- item_stats
+  stats[["items"]] <- item_stats
   return(stats)
 }
 
