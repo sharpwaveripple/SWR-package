@@ -2,7 +2,7 @@ format_p <- function(p, digits = 3, p_under = .001) {
   fmt_str <- paste("%.", digits, "f", sep="")
   p_less_than <- p < p_under
   p[] <- sprintf(fmt_str, p)
-  p_under_str <- paste("<", p_under)
+  p_under_str <- paste("<", p_under, sep="")
   p[p_less_than] <- p_under_str
   return(p)
 }
