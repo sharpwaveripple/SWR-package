@@ -20,18 +20,20 @@ format_corr <- function(corr_test_obj, p_digits = 3, p_under = .001) {
 
 format_alpha <- function(alpha_obj) {
   # Summarizes output from psych::alpha()
-  stats <- list()
-  scale_stats <- alpha_obj$total[c("std.alpha", "mean", "sd")]
-  scale_stats[1] <- sprintf("%.2f", scale_stats[1])
-  scale_stats[2:3] <- sprintf("%.1f", scale_stats[2:3])
-  stats[["alpha"]] <- paste("α =", scale_stats[1])
-  stats[["mean"]] <- paste(scale_stats[2], " (", scale_stats[3], ")", sep="")
+  scale_measures <- c("std.alpha", "G6(smc)", "average_r", "mean", "sd")
+  scale_stats <- alpha_obj$total[scale_measures]
+  scale_stats[1:3] <- sprintf("%.2f", scale_stats[1:3])
+  scale_stats[4:5] <- sprintf("%.1f", scale_stats[4:5])
   response_freq <- alpha_obj$response.freq * 100
   response_freq[] <- sprintf("%.1f", as.matrix(response_freq))
   alpha_drop <- alpha_obj$alpha.drop["std.alpha"]
   alpha_drop[] <- sprintf("%.2f", as.matrix(alpha_drop))
-  item_stats <- cbind(response_freq, alpha_drop)
-  stats[["items"]] <- item_stats
+  stats <- list(alpha=scale_stats[[1]],
+                lambda=scale_stats[[2]],
+                interitem_r=scale_stats[[3]],
+                avg_score=paste(scale_stats[[4]],
+                                " (", scale_stats[[5]], ")", sep=""),
+                items=cbind(response_freq, alpha_drop))
   return(stats)
 }
 
