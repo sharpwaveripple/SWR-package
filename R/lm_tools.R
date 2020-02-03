@@ -16,7 +16,7 @@ format_lm <- function(lm, p_adj_method='none') {
     std <- sjstats::std_beta(lm)
     b <- exact_dec(std$std.estimate)
     ci <- paste(exact_dec(std$conf.low), exact_dec(std$conf.high), sep=', ')
-    b <- paste(b, paren(ci))
+    b <- paste(b, paren(ci, sq=T))
     p <- p.adjust(parameters::p_value(lm)[-1,]$p, p_adj_method)
     results <- cbind(b, format_p(p))
     r2 <- exact_dec(summary(lm)$adj.r.squared)
