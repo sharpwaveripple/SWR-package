@@ -69,6 +69,7 @@ format_corr <- function(corr_test_obj, p_digits = 3,
 }
 
 exact_dec <- function(dbl, digits = 2) {
+  dbl <- as.matrix(dbl)
   if (typeof(dbl) != "double") {
     stop("Input type must be double")
   }
