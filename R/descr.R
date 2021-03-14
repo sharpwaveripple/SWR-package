@@ -45,6 +45,7 @@ na_report <- function(na_vals, var_name, subj_list) {
 }
 
 guess_vartype <- function(vals,
+                          var_name,
                           nominal_thr = 5,
                           ordinal_thr = 15) {
   dtype <- typeof(vals)
@@ -62,6 +63,7 @@ guess_vartype <- function(vals,
   } else {
     vartype <- "nominal"
   }
+  print(paste("Guessing", var_name, "is a", vartype, "variable"))
   return(vartype)
 }
 
@@ -145,7 +147,7 @@ compare_groups <- function(dataset, subj_var, grouping_var, sig_fig = 1,
     if (var_name == grouping_var) next
     values <- dataset[[var_name]]
     na_vals <- is.na(values)
-    vartype <- guess_vartype(values, ordinal_thr = 24)
+    vartype <- guess_vartype(values, var_name, ordinal_thr = 24)
 
     if (any(na_vals)) {
       missing_report <- c(missing_report,
