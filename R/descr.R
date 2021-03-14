@@ -54,7 +54,7 @@ guess_vartype <- function(vals,
     n_uniq <- length(unique(vals))
     if (n_uniq < nominal_thr) {
       vartype <- "nominal"
-    } else if (nominal_thr < n_uniq & n_uniq < ordinal_thr) {
+    } else if ((nominal_thr < n_uniq) & (n_uniq < ordinal_thr)) {
       vartype <- "ordinal"
     } else {
       vartype <- "continuous"
@@ -87,9 +87,9 @@ describe_vartype <- function(vals, var_name, vartype, sig_fig) {
 }
 
 describe <- function(dataset, subj_var, sig_fig = 1,
-                     clean_names = NULL, output_basename = NULL) {
-  if (!is.null(clean_names)) {
-    names(dataset) <- clean_names
+                     name_d = NULL, output_basename = NULL) {
+  if (!is.null(name_d)) {
+    names(dataset) <- clean_names(names(dataset), name_d)
   }
   subj_list <- dataset[[subj_var]]
   missing_report <- c()
@@ -113,5 +113,80 @@ describe <- function(dataset, subj_var, sig_fig = 1,
   if (!is.null(output_basename)) {
     save_descriptives(descriptives, missing_report, output_basename)
   }
+  return(list(descriptives, missing_report))
+}
+
+
+compare_groups <- function(dataset, subj_var, grouping_var, sig_fig = 1,
+                           name_d = NULL, output_basename = NULL) {
+  if (!is.null(name_d)) {
+    names(dataset) <- clean_names(names(dataset), name_d)
+  }
+  subj_list <- dataset[[subj_var]]
+  missing_report <- c()
+  descriptives <- c()
+
+  # make a list of dataframes corresponding to group levels
+  df_list <- list()
+  i <- 1
+  group_vals <- sort(unique(na.omit(df[[grouping_var]])))
+  for (group_val in group_vals) {
+    df_sub <- subset(df, df[[grouping_var]] == group_val)
+    df_list[[i]] <- df_sub
+    i <- i+1
+  }
+
+  grouping_var_vals <- df[[grouping_var]]
+
+  descriptives <- c()
+  p_list <- c()
+  for (var_name in names(dataset)) {
+    if (var_name == subj_var) next
+    if (var_name == grouping_var) next
+    values <- dataset[[var_name]]
+    na_vals <- is.na(values)
+    vartype <- guess_vartype(values, ordinal_thr = 24)
+
+    if (any(na_vals)) {
+      missing_report <- c(missing_report,
+                          na_report(na_vals, var_name, subj_list))
+    }
+
+    n_vals <- length(unique(na.omit(values)))
+    d <- c()
+    for (index in 1:(i - 1)) {
+      df_sub <- df_list[[index]][[var_name]]
+      d <- cbind(d, describe_vartype(df_sub, var_name, vartype, 1))
+    }
+    if (vartype == "continuous") {
+      shapiro_p <- shapiro.test(values)[['p.value']]
+      print(paste("Shapiro p =", shapiro_p))
+      if (shapiro_p < .05) {
+        print("Using Mann Whitney test")
+        stats <- wilcox.test(values ~ grouping_var_vals)
+      } else {
+        print("Using t test")
+        stats <- t.test(values ~ grouping_var_vals)
+      }
+      p <- format_p(stats$p.value)
+    } else {
+      print("Using Chisq test")
+      tab <- table(values, grouping_var_vals)
+      p <- format_p(chisq.test(tab)[['p.value']])
+      p <- c(p, rep("", n_vals - 1))
+    }
+    p_list <- c(p_list, p)
+    descriptives <- rbind(descriptives, d)
+  }
+  ## p_fdr <- p.adjust(p_list, 'fdr')
+  descriptives <- cbind(descriptives, p_list)
+
+  clean_cols <- c()
+  for (j in 1:length(group_vals)) {
+    coln <- paste(group_vals[[j]], "n =", nrow(df_list[[j]]))
+    clean_cols <- c(clean_cols, coln)
+  }
+  colnames(descriptives) <- c(clean_cols, "P")
+
   return(list(descriptives, missing_report))
 }
