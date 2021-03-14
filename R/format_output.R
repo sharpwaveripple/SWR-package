@@ -16,30 +16,6 @@ format_p <- function(p) {
   return(p_fmt)
 }
 
-format_p_old <- function(p, digits = 3, p_under = .001) {
-  fmt_str <- paste("%.", digits, "f", sep = "")
-  p_less_than <- p < p_under
-  p[] <- sprintf(fmt_str, p)
-  p_under_str <- paste("<", p_under, sep = "")
-  p[p_less_than] <- p_under_str
-  return(p)
-}
-
-dodgy_p <- function(p) {
-  p_05 <- p > .01 & p < .055
-  p_01 <- p <= .01 & p > .001
-  p_001 <- p <= .001 & p > .0001
-  p_0001 <- p <= .0001 & p > .00001
-  p_00001 <- p <= .00001
-  p_fmt <- sprintf("%.2f", p)
-  p_fmt[p_05] <- "≤0.05"
-  p_fmt[p_01] <- "≤0.01"
-  p_fmt[p_001] <- "≤0.001"
-  p_fmt[p_0001] <- "≤0.0001"
-  p_fmt[p_00001] <- "≤0.00001"
-  return(p_fmt)
-}
-
 paren <- function(s, sq = F) {
   if (sq) {
     return(paste("[", s, "]", sep = ""))
