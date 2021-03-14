@@ -1,14 +1,18 @@
 format_p <- function(p) {
+  p_2_digits <- p >= .01
   p_3_digits <- p < .01 & p >= .001
-  p_001 <- p < .001
-  # p_0001 <- p < .0001
+  p_4_digits <- p < .001 & p >= .0001
+  ## p_0001 <- p < .0001
+  ## p_001 <- p < .001
   # p_0001 <- p < .0001 & p > .00001
-  # p_00001 <- p < .00001
-  p_fmt <- sprintf("%.3f", p)
-  # p_fmt[p_3_digits] <- sprintf("%.3f", p[p_3_digits])
-  p_fmt[p_001] <- "<0.001"
+  p_00001 <- p < .00001
+  p_fmt <- sprintf("%.5f", p)
+  p_fmt[p_2_digits] <- sprintf("%.2f", p[p_2_digits])
+  p_fmt[p_3_digits] <- sprintf("%.3f", p[p_3_digits])
+  p_fmt[p_4_digits] <- sprintf("%.4f", p[p_4_digits])
+  ## p_fmt[p_001] <- "<0.0001"
   # p_fmt[p_0001] <- "<0.0001"
-  # p_fmt[p_00001] <- "<0.00001"
+  p_fmt[p_00001] <- "<0.00001"
   return(p_fmt)
 }
 
